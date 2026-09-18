@@ -185,6 +185,7 @@ static void HUDScreen_RemakeLine2(struct HUDScreen* s) {
 	if (hacks->Flying) String_AppendConst(&status, "Fly ON   ");
 	if (speed)         String_Format1(&status, "Speed %f1x   ", &speed);
 	if (hacks->Noclip) String_AppendConst(&status, "Noclip ON   ");
+	if (hacks->AltNoclip) String_Format1(&status, "Alt Noclip %f   ", &Entities.CurPlayer->Base.highY);
 
 	TextWidget_Set(&s->line2, &status, &s->font);
 }

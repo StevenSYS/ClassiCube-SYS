@@ -2207,8 +2207,8 @@ void NormalBindingsScreen_Show(void) {
 *--------------------------------------------------HacksBindingsScreen----------------------------------------------------*
 *#########################################################################################################################*/
 void HacksBindingsScreen_Show(void) {
-	static const cc_uint8 binds[]    = { BIND_SPEED, BIND_NOCLIP, BIND_HALF_SPEED, BIND_ZOOM_SCROLL, BIND_FLY, BIND_FLY_UP, BIND_FLY_DOWN, BIND_THIRD_PERSON };
-	static const char* const descs[] = { "Speed", "Noclip", "Half speed", "Scroll zoom", "Fly", "Fly up", "Fly down", "Third person" };
+	static const cc_uint8 binds[]    = { BIND_SPEED, BIND_NOCLIP, BIND_HALF_SPEED, BIND_ZOOM_SCROLL, BIND_FLY, BIND_FLY_UP, BIND_FLY_DOWN, BIND_THIRD_PERSON, BIND_ALT_NOCLIP };
+	static const char* const descs[] = { "Speed", "Noclip", "Half speed", "Scroll zoom", "Fly", "Fly up", "Fly down", "Third person", "Alt noclip" };
 	
 	KeyBindsScreen_Reset(Menu_SwitchBindsNormal, Menu_SwitchBindsOther, 260);
 	KeyBindsScreen_SetLayout(-40, 10, 4);

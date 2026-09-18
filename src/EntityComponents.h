@@ -61,7 +61,7 @@ struct HacksComp {
 	/* Whether the player has allowed the usage of fast double jumping abilities */
 	cc_bool WOMStyleHacks; 
 
-	cc_bool Noclip, Flying, FlyingUp, FlyingDown, Speeding, HalfSpeeding;
+	cc_bool Noclip, AltNoclip, Flying, FlyingUp, FlyingDown, Speeding, HalfSpeeding;
 	float MaxHorSpeed;
 	cc_string HacksFlags;
 	char __HacksFlagsBuffer[STRING_SIZE * 2];	
@@ -77,6 +77,7 @@ void HacksComp_RecheckFlags(struct HacksComp* hacks);
 void HacksComp_Update(struct HacksComp* hacks);
 void HacksComp_SetFlying(struct HacksComp* hacks, cc_bool flying);
 void HacksComp_SetNoclip(struct HacksComp* hacks, cc_bool noclip);
+void HacksComp_SetAltNoclip(struct HacksComp *hacks, cc_bool v);
 float HacksComp_CalcSpeedFactor(struct HacksComp* hacks, cc_bool canSpeed);
 
 #define InterpComp_Layout int RotYCount; float RotYStates[15];
@@ -109,7 +110,7 @@ struct CollisionsComp {
 	float StepSize;
 };
 cc_bool Collisions_HitHorizontal(struct CollisionsComp* comp);
-void Collisions_MoveAndWallSlide(struct CollisionsComp* comp);
+void Collisions_MoveAndWallSlide(struct CollisionsComp* comp, cc_bool altNoclip);
 
 /* Entity component that performs collisions */
 struct PhysicsComp {

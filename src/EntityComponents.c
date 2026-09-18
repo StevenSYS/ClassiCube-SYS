@@ -240,6 +240,7 @@ void HacksComp_Update(struct HacksComp* hacks) {
 	}
 	if (!hacks->CanNoclip || !hacks->Enabled) {
 		HacksComp_SetNoclip(hacks, false);
+		HacksComp_SetAltNoclip(hacks, false);
 	}
 	if (!hacks->CanSpeed || !hacks->Enabled) {
 		hacks->Speeding = false; hacks->HalfSpeeding = false;
@@ -256,9 +257,20 @@ void HacksComp_SetFlying(struct HacksComp* hacks, cc_bool flying) {
 }
 
 void HacksComp_SetNoclip(struct HacksComp* hacks, cc_bool noclip) {
+	hacks->AltNoclip = false;
 	if (hacks->Noclip == noclip) return;
 	hacks->Noclip = noclip;
 	Event_RaiseVoid(&UserEvents.HacksStateChanged);
+}
+
+void HacksComp_SetAltNoclip(struct HacksComp *hacks, cc_bool v) {
+	hacks->Noclip = false;
+	if (hacks->AltNoclip == v) {
+		return;
+	}
+	hacks->AltNoclip = v;
+	Event_RaiseVoid(&UserEvents.HacksStateChanged);
+	return;
 }
 
 float HacksComp_CalcSpeedFactor(struct HacksComp* hacks, cc_bool canSpeed) {
@@ -616,8 +628,13 @@ static void Collisions_ClipYMax(struct CollisionsComp* comp, struct AABB* blockB
 	comp->HitYMax = true;
 }
 
-static void Collisions_CollideWithReachableBlocks(struct CollisionsComp* comp, int count, struct AABB* entityBB,
-												struct AABB* extentBB) {
+static void Collisions_CollideWithReachableBlocks(
+	struct CollisionsComp* comp,
+	int count,
+	struct AABB* entityBB,
+	struct AABB* extentBB,
+	cc_bool altNoclip
+) {
 	struct Entity* entity = comp->Entity;
 	struct SearcherState state;
 	struct AABB blockBB, finalBB;
@@ -660,6 +677,12 @@ static void Collisions_CollideWithReachableBlocks(struct CollisionsComp* comp, i
 
 		/* if we have hit the bottom of a block, we need to change the axis we test first */
 		if (!comp->HitYMin) {
+			if (altNoclip) {
+				if (entity->highY + COLLISIONS_ADJ >= blockBB.Max.y) {
+					Collisions_ClipYMax(comp, &blockBB, entityBB, extentBB, &size);
+				}
+				continue;
+			}
 			if (finalBB.Min.y + COLLISIONS_ADJ >= blockBB.Max.y) {
 				Collisions_ClipYMax(comp, &blockBB, entityBB, extentBB, &size);
 			} else if (finalBB.Max.y - COLLISIONS_ADJ <= blockBB.Min.y) {
@@ -694,14 +717,17 @@ static void Collisions_CollideWithReachableBlocks(struct CollisionsComp* comp, i
 }
 
 /* TODO: test for corner cases, and refactor this */
-void Collisions_MoveAndWallSlide(struct CollisionsComp* comp) {
+void Collisions_MoveAndWallSlide(
+	struct CollisionsComp* comp,
+	cc_bool altNoclip
+) {
 	struct Entity* e = comp->Entity;
 	struct AABB entityBB, entityExtentBB;
 	int count;
 
 	if (Vec3_IsZero(e->Velocity)) return;
 	count = Searcher_FindReachableBlocks(e,            &entityBB, &entityExtentBB);
-	Collisions_CollideWithReachableBlocks(comp, count, &entityBB, &entityExtentBB);
+	Collisions_CollideWithReachableBlocks(comp, count, &entityBB, &entityExtentBB, altNoclip);
 }
 
 
@@ -836,7 +862,7 @@ static void PhysicsComp_Move(struct PhysicsComp* comp, Vec3 drag, float gravity,
 	entity->Velocity.y *= yMul;
 
 	if (!comp->Hacks->Noclip) {
-		Collisions_MoveAndWallSlide(comp->Collisions);
+		Collisions_MoveAndWallSlide(comp->Collisions, comp->Hacks->AltNoclip);
 	}
 	Vec3_AddBy(&entity->Position, &entity->Velocity);
 

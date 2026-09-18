@@ -794,6 +794,7 @@ static void LocalPlayer_Init(struct LocalPlayer* p, int index) {
 	TiltComp_Init(&p->Tilt);
 
 	p->Base.Flags |= ENTITY_FLAG_MODEL_RESTRICTED_SCALE;
+	p->Base.highY = 0.0f;
 	p->ReachDistance = 5.0f;
 	p->Physics.Hacks = &p->Hacks;
 	p->Physics.Collisions = &p->Collisions;
@@ -980,6 +981,24 @@ static cc_bool LocalPlayer_HandleNoclip(int key, struct InputDevice* device) {
 	return false;
 }
 
+static cc_bool LocalPlayer_HandleAltNoclip(
+	int key,
+	struct InputDevice *device
+) {
+	struct LocalPlayer *p = &LocalPlayer_Instances[device->mappedIndex];
+	if (Gui.InputGrab) return false;
+
+	if (p->Hacks.CanNoclip && p->Hacks.Enabled) {
+		p->Base.highY = Math_Floor(p->Base.Position.y);
+		HacksComp_SetAltNoclip(&p->Hacks, !p->Hacks.AltNoclip);
+		return true;
+	} else if (!p->_warnedNoclip) {
+		p->_warnedNoclip = true;
+		if (hackPermMsgs) Chat_AddRaw("&cNoclip is currently disabled");
+	}
+	return false;
+}
+
 static cc_bool LocalPlayer_HandleJump(int key, struct InputDevice* device) {
 	struct LocalPlayer* p = &LocalPlayer_Instances[device->mappedIndex];
 	struct HacksComp* hacks     = &p->Hacks;
@@ -1032,16 +1051,32 @@ static void LocalPlayer_ReleaseSpeed(int key, struct InputDevice* device) {
 
 
 static cc_bool LocalPlayer_TriggerFlyUp(int key, struct InputDevice* device) {
-	struct HacksComp* hacks = &LocalPlayer_Instances[device->mappedIndex].Hacks;
+	struct LocalPlayer *player = &LocalPlayer_Instances[device->mappedIndex];
+	struct HacksComp* hacks = &player->Hacks;
+	
 	if (Gui.InputGrab) return false;
+	
+	if (hacks->AltNoclip) {
+		player->Base.highY++;
+		Event_RaiseVoid(&UserEvents.HacksStateChanged);
+		return true;
+	}
 	
 	hacks->FlyingUp = true;
 	return hacks->CanFly && hacks->Enabled;
 }
 
 static cc_bool LocalPlayer_TriggerFlyDown(int key, struct InputDevice* device) {
-	struct HacksComp* hacks = &LocalPlayer_Instances[device->mappedIndex].Hacks;
+	struct LocalPlayer *player = &LocalPlayer_Instances[device->mappedIndex];
+	struct HacksComp* hacks = &player->Hacks;
+	
 	if (Gui.InputGrab) return false;
+	
+	if (hacks->AltNoclip) {
+		player->Base.highY--;
+		Event_RaiseVoid(&UserEvents.HacksStateChanged);
+		return true;
+	}
 	
 	hacks->FlyingDown = true;
 	return hacks->CanFly && hacks->Enabled;
@@ -1068,6 +1103,7 @@ static void LocalPlayer_HookBinds(void) {
 	Bind_OnTriggered[BIND_SET_SPAWN] = LocalPlayer_HandleSetSpawn;
 	Bind_OnTriggered[BIND_FLY]       = LocalPlayer_HandleFly;
 	Bind_OnTriggered[BIND_NOCLIP]    = LocalPlayer_HandleNoclip;
+	Bind_OnTriggered[BIND_ALT_NOCLIP] = LocalPlayer_HandleAltNoclip;
 	Bind_OnTriggered[BIND_JUMP]      = LocalPlayer_HandleJump;
 
 	Bind_OnTriggered[BIND_HALF_SPEED] = LocalPlayer_TriggerHalfSpeed;

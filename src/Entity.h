@@ -141,6 +141,7 @@ struct Entity {
 	GfxResourceID ModelVB;
 
 	float PushStrength;
+	float highY;
 };
 typedef cc_bool (*Entity_TouchesCondition)(BlockID block);
 
@@ -250,7 +251,7 @@ struct LocalPlayer {
 	struct InterpComp Interp;
 	struct CollisionsComp Collisions;
 	struct PhysicsComp Physics;
-	cc_bool _warnedRespawn, _warnedFly, _warnedNoclip, _warnedZoom;
+	cc_bool _warnedRespawn, _warnedFly, _warnedNoclip, _warnedAltNoclip, _warnedZoom;
 	cc_uint8 index;
 };
 

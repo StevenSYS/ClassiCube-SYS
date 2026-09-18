@@ -402,7 +402,7 @@ const BindMapping PadBind_Defaults[BIND_COUNT] = {
 	{ CCPAD_2, CCPAD_R },                   /* BIND_FLY */ 
 	{CCPAD_2,CCPAD_UP},{CCPAD_2,CCPAD_DOWN},/* BIND_FLY_UP, BIND_FLY_DOWN */
 	{ 0, 0 }, { 0, 0 },                     /* BIND_EXT_INPUT, BIND_HIDE_FPS */
-	{ 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, /* BIND_SCREENSHOT, BIND_FULLSCREEN, BIND_THIRD_PERSON, BIND_HIDE_GUI */
+	{ 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, /* BIND_SCREENSHOT, BIND_FULLSCREEN, BIND_THIRD_PERSON, BIND_ALT_NOCLIP, BIND_HIDE_GUI */
 	{ 0, 0 }, { 0, 0 }, { 0, 0 },           /* BIND_AXIS_LINES, BIND_ZOOM_SCROLL, BIND_HALF_SPEED */
 	{ CCPAD_L, 0 }, { 0, 0 },{ CCPAD_R, 0 },/* BIND_DELETE_BLOCK, BIND_PICK_BLOCK, BIND_PLACE_BLOCK */
 	{ 0, 0 }, { 0, 0 }, { 0, 0 },           /* BIND_AUTOROTATE, BIND_HOTBAR_SWITCH, BIND_SMOOTH_CAMERA */
@@ -424,7 +424,7 @@ const BindMapping KeyBind_Defaults[BIND_COUNT] = {
 	{ 'Q', 0 },          { 'E', 0 },                /* BIND_FLY_UP, BIND_FLY_DOWN */
 	{ CCKEY_LALT, 0 },   { CCKEY_F3, 0 },           /* BIND_EXT_INPUT, BIND_HIDE_FPS */
 	{ CCKEY_F12, 0 },    { CCKEY_F11, 0 },          /* BIND_SCREENSHOT, BIND_FULLSCREEN */
-	{ CCKEY_F5, 0 },     { CCKEY_F1, 0 },           /* BIND_THIRD_PERSON, BIND_HIDE_GUI */ 
+	{ CCKEY_F5, 0 },     { 0, 0 }, { CCKEY_F1, 0 },           /* BIND_THIRD_PERSON, BIND_ALT_NOCLIP, BIND_HIDE_GUI */ 
 	{ CCKEY_F7, 0 }, { 'C', 0 }, { CCKEY_LCTRL, 0 },/* BIND_AXIS_LINES, BIND_ZOOM_SCROLL, BIND_HALF_SPEED */
 	{ CCMOUSE_L, 0},{ CCMOUSE_M, 0},{ CCMOUSE_R, 0},/* BIND_DELETE_BLOCK, BIND_PICK_BLOCK, BIND_PLACE_BLOCK */
 	{ CCKEY_F6, 0 },     { CCKEY_LALT, 0 },         /* BIND_AUTOROTATE, BIND_HOTBAR_SWITCH */
@@ -444,7 +444,7 @@ static const char* const bindNames[BIND_COUNT] = {
 	"ToggleFog", "SendChat", "PlayerList", 
 	"Speed", "NoClip", "Fly", "FlyUp", "FlyDown", 
 	"ExtInput", "HideFPS", "Screenshot", "Fullscreen", 
-	"ThirdPerson", "HideGUI", "AxisLines", "ZoomScrolling", 
+	"ThirdPerson", "AltNoclip", "HideGUI", "AxisLines", "ZoomScrolling", 
 	"HalfSpeed", "DeleteBlock", "PickBlock", "PlaceBlock", 
 	"AutoRotate", "HotbarSwitching", "SmoothCamera", 
 	"DropBlock", "IDOverlay", "BreakableLiquids",
