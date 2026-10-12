@@ -1,5 +1,5 @@
 ifeq ($(strip $(NXDK_DIR)),)
-$(error Please set NXDK_DIR in your environment. For example:)
+$(warning Please set NXDK_DIR in your environment. For example:)
 $(warning /opt/nxdk/bin/activate)
 $(error Undefined NXDK_DIR (root directory))
 endif
@@ -62,24 +62,22 @@ EXTRACT_XISO := $(NXDK_DIR)/tools/extract-xiso/build/extract-xiso
 # shader object generation
 #---------------------------------------------------------------------------------
 SHDR_DIR	:= misc/xbox
-SHDR_SRCS 	:= $(notdir $(wildcard $(SHDR_DIR)/*.cg))
-SHDR_OBJS	:= $(addprefix $(BUILD_DIR)/, $(SHDR_SRCS:.cg=.inl))
+VSHDR_SRCS 	:= $(notdir $(wildcard $(SHDR_DIR)/vs_*.cg))
+PSHDR_SRCS 	:= $(notdir $(wildcard $(SHDR_DIR)/ps_*.asm))
+SHDR_OBJS	:= $(addprefix $(BUILD_DIR)/, $(VSHDR_SRCS:.cg=.inl)) $(addprefix $(BUILD_DIR)/, $(PSHDR_SRCS:.asm=.inl))
 GEN_FILES	+= $(SHDR_OBJS)
 
-.PRECIOUS: $(SHDR_DIR)/vs_%.asm $(SHDR_DIR)/ps_%.asm
+.PRECIOUS: $(BUILD_DIR)/vs_%.asm
 # prevent the .asm files from being deleted
 
-$(BUILD_DIR)/vs_%.inl: $(SHDR_DIR)/vs_%.asm
+$(BUILD_DIR)/vs_%.inl: $(BUILD_DIR)/vs_%.asm
 	$(VP20COMPILER) $< > $@
 
-$(SHDR_DIR)/vs_%.asm: $(SHDR_DIR)/vs_%.cg
+$(BUILD_DIR)/vs_%.asm: $(SHDR_DIR)/vs_%.cg
 	$(CGC) -profile vp20 $< -o $@
 
 $(BUILD_DIR)/ps_%.inl: $(SHDR_DIR)/ps_%.asm
 	$(FP20COMPILER) $< > $@
-
-$(SHDR_DIR)/ps_%.asm: $(SHDR_DIR)/ps_%.cg
-	$(CGC) -profile fp20 $< -o $@
 
 src/xbox/Graphics_Xbox.c : $(SHDR_OBJS)
 
